@@ -1,0 +1,24 @@
+version: '3.9'
+
+services:
+
+  database:
+    image: mysql
+    ports:
+      - '3306:3306'
+    volumes:
+      - ./volumes/database:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: $DB_NAME
+      MYSQL_ROOT_PASSWORD: $DB_PASS
+    container_name: pp-anilist-database
+
+  database-view:
+    image: phpmyadmin
+    ports:
+      - '8080:80'
+    environment:
+      PMA_HOST: pp-anilist-database
+      PMA_USER: $DB_USER
+      PMA_PASSWORD: $DB_PASS
+    container_name: pp-anilist-database-view
