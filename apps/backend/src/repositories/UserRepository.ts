@@ -11,7 +11,9 @@ export class UserRepository {
   }
 
   public getAllUser(): Promise<User[]> {
-    return this.prismaService.user.findMany();
+    return this.prismaService.user.findMany({
+      orderBy: { name: 'asc' },
+    });
   }
 
   public getUserWhereUnique(
