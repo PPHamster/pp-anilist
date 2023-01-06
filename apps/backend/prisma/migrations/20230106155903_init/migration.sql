@@ -16,11 +16,11 @@ CREATE TABLE `Anime` (
     `titleJp` VARCHAR(150) NOT NULL,
     `titleEn` VARCHAR(150) NOT NULL,
     `titleTh` VARCHAR(150) NOT NULL,
-    `rating` INTEGER NOT NULL DEFAULT 0,
+    `rating` INTEGER NOT NULL,
     `image` LONGBLOB NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `lastUpdate` DATETIME(3) NOT NULL,
-    `isWatching` BOOLEAN NOT NULL DEFAULT false,
+    `isWatching` BOOLEAN NOT NULL,
     `userId` VARCHAR(100) NOT NULL,
 
     PRIMARY KEY (`id`)
@@ -40,10 +40,10 @@ CREATE TABLE `Season` (
 -- CreateTable
 CREATE TABLE `Waifu` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `nameEn` VARCHAR(191) NOT NULL,
-    `nameTh` VARCHAR(191) NOT NULL,
+    `nameEn` VARCHAR(100) NOT NULL,
+    `nameTh` VARCHAR(100) NOT NULL,
     `description` TEXT NOT NULL,
-    `level` INTEGER NOT NULL DEFAULT 0,
+    `level` INTEGER NOT NULL,
     `image` LONGBLOB NOT NULL,
     `animeId` INTEGER NOT NULL,
 

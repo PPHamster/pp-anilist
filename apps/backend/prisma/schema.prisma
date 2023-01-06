@@ -20,11 +20,11 @@ model Anime {
   titleJp    String   @db.VarChar(150)
   titleEn    String   @db.VarChar(150)
   titleTh    String   @db.VarChar(150)
-  rating     Int      @default(0)
+  rating     Int
   image      Bytes    @db.LongBlob()
   createdAt  DateTime @default(now())
-  lastUpdate DateTime @updatedAt
-  isWatching Boolean  @default(false)
+  lastUpdate DateTime @updatedAt()
+  isWatching Boolean
   user       User     @relation(fields: [userId], references: [id])
   userId     String   @db.VarChar(100)
   seasons    Season[]
@@ -42,10 +42,10 @@ model Season {
 
 model Waifu {
   id          Int    @id @default(autoincrement())
-  nameEn      String
-  nameTh      String
+  nameEn      String @db.VarChar(100)
+  nameTh      String @db.VarChar(100)
   description String @db.Text()
-  level       Int    @default(0)
+  level       Int
   image       Bytes  @db.LongBlob()
   anime       Anime  @relation(fields: [animeId], references: [id])
   animeId     Int    @unique
