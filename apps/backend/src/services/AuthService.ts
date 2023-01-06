@@ -20,7 +20,8 @@ export class AuthService {
         return userUpdate;
       }
     }
-    await this.userRepository.createUser(detail);
+    const newUser = await this.userRepository.createUser(detail);
+    return newUser;
   }
 
   public getUserById(id: string): Promise<User | null> {

@@ -1,13 +1,15 @@
+import { RequestUser } from '@/utils/decorators/AuthDecorator';
+import { AuthGuard } from '@/utils/guards/AuthGuard';
 import { GoogleAuthGuard } from '@/utils/guards/GoogleAuthGuard';
 import {
   Controller,
   Get,
-  HttpException,
   HttpStatus,
   Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
+import { User } from '@prisma/client';
 import { Request, Response, NextFunction } from 'express';
 
 @Controller('auth')
@@ -15,21 +17,28 @@ export class AuthController {
   @Get('google/login')
   @UseGuards(GoogleAuthGuard)
   public googleLogin(@Res() res: Response) {
-    return res.send({ msg: 'Login Route' });
+    return res.send({ message: 'Login Route' });
   }
 
   @Get('google/callback')
   @UseGuards(GoogleAuthGuard)
   public googleCallback(@Res() res: Response) {
-    return res.status(HttpStatus.OK).send({ msg: 'Callback Route' });
+    return res.status(HttpStatus.OK).send({ message: 'Callback Route' });
   }
 
   @Get('logout')
+  @UseGuards(AuthGuard)
   public logout(@Req() req: Request, @Res() res: Response, next: NextFunction) {
     req.logOut((err: unknown) => {
       if (err && err instanceof Error) return next(err);
-      res.status(HttpStatus.OK).send({ msg: 'Logout Success' });
+      res.status(HttpStatus.OK).send({ message: 'Logout Success' });
     });
+  }
+
+  @Get('me')
+  @UseGuards(AuthGuard)
+  public me(@RequestUser() user: User, @Res() res: Response) {
+    res.status(HttpStatus.OK).json(user);
   }
 
   @Get('status')
@@ -37,18 +46,9 @@ export class AuthController {
     console.log('cookies');
     console.log(req.session.cookie);
     if (req.user) {
-      return { msg: 'Authenticate', user: req.user };
+      return { message: 'Authenticate', user: req.user };
     } else {
-      return { msg: 'Not Authenticate' };
-    }
-  }
-
-  @Get('me')
-  public me(@Req() req: Request, @Res() res: Response) {
-    if (req.user) {
-      res.status(HttpStatus.FOUND).json(req.user);
-    } else {
-      throw new HttpException('Unauthorization User', HttpStatus.UNAUTHORIZED);
+      return { message: 'Not Authenticate' };
     }
   }
 }

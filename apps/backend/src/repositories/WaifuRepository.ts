@@ -6,7 +6,7 @@ import { Waifu, Prisma } from '@prisma/client';
 export class WaifuRepository {
   public constructor(private readonly prismaService: PrismaService) {}
 
-  public createWaifu(data: Prisma.WaifuCreateInput): Promise<Waifu> {
+  public createWaifu(data: Prisma.WaifuCreateManyInput): Promise<Waifu> {
     return this.prismaService.waifu.create({ data });
   }
 

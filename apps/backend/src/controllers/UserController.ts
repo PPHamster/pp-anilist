@@ -1,8 +1,8 @@
 import { UserService } from '@/services/UserService';
 import {
+  BadRequestException,
   Controller,
   Get,
-  HttpException,
   HttpStatus,
   Param,
   Res,
@@ -22,7 +22,7 @@ export class UserController {
   @Get(':id')
   public async getUserByEmail(@Param('id') id: string, @Res() res: Response) {
     const user = await this.userService.getUserById(id);
-    if (!user) throw new HttpException('Not found user', HttpStatus.NOT_FOUND);
+    if (!user) throw new BadRequestException();
     return res.status(HttpStatus.OK).json(user);
   }
 }
