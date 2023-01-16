@@ -10,10 +10,24 @@ export class WaifuRepository {
     return this.prismaService.waifu.create({ data });
   }
 
-  public getWaifuWhereUnique(
-    where: Prisma.WaifuWhereUniqueInput,
-  ): Promise<Waifu | null> {
-    return this.prismaService.waifu.findUnique({ where });
+  public getWaifuWithoutImageWhereUnique(where: Prisma.WaifuWhereUniqueInput) {
+    return this.prismaService.waifu.findUnique({
+      where,
+      select: {
+        description: true,
+        id: true,
+        level: true,
+        nameEn: true,
+        nameTh: true,
+      },
+    });
+  }
+
+  public getWaifuImageWhereUnique(where: Prisma.WaifuWhereUniqueInput) {
+    return this.prismaService.waifu.findUnique({
+      where,
+      select: { image: true },
+    });
   }
 
   public updateWaifuWhereUnique(args: Prisma.WaifuUpdateArgs): Promise<Waifu> {

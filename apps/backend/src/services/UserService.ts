@@ -1,5 +1,5 @@
 import { UserRepository } from '@/repositories/UserRepository';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 
 @Injectable()
@@ -10,11 +10,15 @@ export class UserService {
     return this.userRepository.getAllUser();
   }
 
-  public getUserByEmail(email: string): Promise<User> {
-    return this.userRepository.getUserWhereUnique({ email });
+  public async getUserByEmailOrThrow(email: string): Promise<User> {
+    const user = await this.userRepository.getUserWhereUnique({ email });
+    if (!user) throw new BadRequestException("Don't have user from this email");
+    return user;
   }
 
-  public getUserById(id: string): Promise<User> {
-    return this.userRepository.getUserWhereUnique({ id });
+  public async getUserByIdOrThrow(id: string): Promise<User> {
+    const user = await this.userRepository.getUserWhereUnique({ id });
+    if (!user) throw new BadRequestException("Don't have user from this id");
+    return user;
   }
 }

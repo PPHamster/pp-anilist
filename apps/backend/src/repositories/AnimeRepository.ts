@@ -24,7 +24,7 @@ export class AnimeRepository {
     return this.prismaService.anime.findUnique({ where });
   }
 
-  public getAllAnimeWithoutImageWhere(where: Prisma.AnimeWhereInput) {
+  public getAllAnimeWithSeasonsWhere(where: Prisma.AnimeWhereInput) {
     return this.prismaService.anime.findMany({
       where,
       select: {
@@ -36,7 +36,7 @@ export class AnimeRepository {
         titleEn: true,
         titleJp: true,
         titleTh: true,
-        userId: true,
+        seasons: true,
       },
     });
   }
@@ -54,6 +54,24 @@ export class AnimeRepository {
         titleJp: true,
         titleTh: true,
         userId: true,
+        seasons: {
+          select: {
+            chapterCount: true,
+            id: true,
+            sequence: true,
+            title: true,
+          },
+          orderBy: { sequence: 'asc' },
+        },
+        waifu: {
+          select: {
+            description: true,
+            id: true,
+            level: true,
+            nameEn: true,
+            nameTh: true,
+          },
+        },
       },
     });
   }
@@ -69,9 +87,9 @@ export class AnimeRepository {
     return this.prismaService.anime.update(args);
   }
 
-  public async deleteAnimeWhereUnique(
+  public deleteAnimeWhereUnique(
     where: Prisma.AnimeWhereUniqueInput,
-  ): Promise<void> {
-    await this.prismaService.anime.delete({ where });
+  ): Promise<Anime> {
+    return this.prismaService.anime.delete({ where });
   }
 }

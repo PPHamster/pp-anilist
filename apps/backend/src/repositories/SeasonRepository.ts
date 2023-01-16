@@ -6,7 +6,7 @@ import { Season, Prisma } from '@prisma/client';
 export class SeasonRepository {
   public constructor(private readonly prismaService: PrismaService) {}
 
-  public createSeason(data: Prisma.SeasonCreateInput): Promise<Season> {
+  public createSeason(data: Prisma.SeasonCreateManyInput): Promise<Season> {
     return this.prismaService.season.create({ data });
   }
 
@@ -16,6 +16,19 @@ export class SeasonRepository {
 
   public getManySeasonWhere(where: Prisma.SeasonWhereInput): Promise<Season[]> {
     return this.prismaService.season.findMany({ where });
+  }
+
+  public getUserIdAndAnimeIdFromSeasonWhereUnique(
+    where: Prisma.SeasonWhereUniqueInput,
+  ) {
+    return this.prismaService.season.findUnique({
+      where,
+      select: {
+        anime: {
+          select: { userId: true, id: true },
+        },
+      },
+    });
   }
 
   public updateSeasonWhereUnique(

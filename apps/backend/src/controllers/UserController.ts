@@ -21,7 +21,7 @@ export class UserController {
 
   @Get(':id')
   public async getUserByEmail(@Param('id') id: string, @Res() res: Response) {
-    const user = await this.userService.getUserById(id);
+    const user = await this.userService.getUserByIdOrThrow(id);
     if (!user) throw new BadRequestException();
     return res.status(HttpStatus.OK).json(user);
   }
