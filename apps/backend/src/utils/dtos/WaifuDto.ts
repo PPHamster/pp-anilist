@@ -6,6 +6,7 @@ import {
   Min,
   Max,
   IsOptional,
+  IsBase64,
 } from 'class-validator';
 
 export class WaifuCreateDto {
@@ -28,8 +29,7 @@ export class WaifuCreateDto {
   @Max(5)
   public level: number;
 
-  @IsNotEmpty()
-  @IsString()
+  @IsBase64()
   public image: string;
 }
 
@@ -38,27 +38,26 @@ export class WaifuUpdateDto {
   @IsNotEmpty()
   @IsString()
   @MaxLength(100)
-  public nameEn: string;
+  public nameEn?: string;
 
   @IsOptional()
   @IsNotEmpty()
   @IsString()
   @MaxLength(100)
-  public nameTh: string;
+  public nameTh?: string;
 
   @IsOptional()
   @IsNotEmpty()
   @IsString()
-  public description: string;
+  public description?: string;
 
   @IsOptional()
   @IsInt()
   @Min(0)
   @Max(5)
-  public level: number;
+  public level?: number;
 
   @IsOptional()
-  @IsNotEmpty()
-  @IsString()
-  public image: string;
+  @IsBase64()
+  public image?: string;
 }

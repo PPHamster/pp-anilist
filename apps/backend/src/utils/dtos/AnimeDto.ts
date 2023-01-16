@@ -9,6 +9,7 @@ import {
   IsBoolean,
   IsOptional,
   ValidateNested,
+  IsBase64,
 } from 'class-validator';
 import { SeasonCreateDto } from '@/utils/dtos/SeasonDto';
 import { WaifuCreateDto } from '@/utils/dtos/WaifuDto';
@@ -34,9 +35,7 @@ export class AnimeCreateDto {
   @Max(5)
   public rating: number;
 
-  @IsNotEmpty()
-  @IsString()
-  // @IsBase64()
+  @IsBase64()
   public image: string;
 
   @IsBoolean()
@@ -58,32 +57,31 @@ export class AnimeUpdateDto {
   @IsNotEmpty()
   @IsString()
   @MaxLength(150)
-  public titleJp: string;
+  public titleJp?: string;
 
   @IsOptional()
   @IsNotEmpty()
   @IsString()
   @MaxLength(150)
-  public titleEn: string;
+  public titleEn?: string;
 
   @IsOptional()
   @IsNotEmpty()
   @IsString()
   @MaxLength(150)
-  public titleTh: string;
+  public titleTh?: string;
 
   @IsOptional()
   @IsInt()
   @Min(0)
   @Max(5)
-  public rating: number;
+  public rating?: number;
 
   @IsOptional()
-  @IsNotEmpty()
-  @IsString()
-  public image: string;
+  @IsBase64()
+  public image?: string;
 
   @IsOptional()
   @IsBoolean()
-  public isWatching: boolean;
+  public isWatching?: boolean;
 }

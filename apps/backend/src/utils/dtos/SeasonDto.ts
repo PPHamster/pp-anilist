@@ -27,15 +27,15 @@ export class SeasonUpdateDto {
   @IsNotEmpty()
   @IsString()
   @MaxLength(100)
-  public title: string;
+  public title?: string;
 
   @IsOptional()
   @IsInt()
   @Min(0)
-  public sequence: number;
+  public sequence?: number;
 
   @IsOptional()
   @IsInt()
   @Min(0)
-  public chapterCount: number;
+  public chapterCount?: number;
 }
