@@ -34,7 +34,7 @@ export class WaifuRepository {
     return this.prismaService.waifu.update(args);
   }
 
-  public async deleteWaifuWhereUnique(where: Prisma.WaifuWhereUniqueInput) {
-    await this.prismaService.waifu.delete({ where });
+  public deleteWaifuWhereUnique(where: Prisma.WaifuWhereUniqueInput) {
+    return this.prismaService.waifu.delete({ where });
   }
 }

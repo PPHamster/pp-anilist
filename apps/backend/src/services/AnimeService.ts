@@ -2,6 +2,8 @@ import { AnimeRepository } from '@/repositories/AnimeRepository';
 import { SeasonRepository } from '@/repositories/SeasonRepository';
 import { WaifuRepository } from '@/repositories/WaifuRepository';
 import { AnimeCreateDto, AnimeUpdateDto } from '@/utils/dtos/AnimeDto';
+import { SeasonCreateDto, SeasonUpdateDto } from '@/utils/dtos/SeasonDto';
+import { WaifuCreateDto, WaifuUpdateDto } from '@/utils/dtos/WaifuDto';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { Buffer } from 'buffer';
@@ -71,6 +73,7 @@ export class AnimeService {
     const animeWithImage = await this.animeRepository.getAnimeImageWhereUnique({
       id,
     });
+
     return `data:image/png;base64,${Buffer.from(animeWithImage.image).toString(
       'base64',
     )}`;
@@ -81,20 +84,25 @@ export class AnimeService {
       await this.seasonRepository.getUserIdAndAnimeIdFromSeasonWhereUnique({
         id,
       });
+
     if (!userIdAndAnimeIdInSeason)
       throw new BadRequestException("Don't have season for this id");
+
     return userIdAndAnimeIdInSeason.anime;
   }
 
   public async updateAnimeById(id: number, data: AnimeUpdateDto) {
-    const convertData = data.image
-      ? { ...data, image: Buffer.from(data.image, 'base64') }
-      : { ...data, image: undefined };
-    const update = await this.animeRepository.updateAnimeWhereUnique({
+    const convertData = {
+      ...data,
+      image: data.image ? Buffer.from(data.image, 'base64') : undefined,
+    };
+
+    const updatedAnime = await this.animeRepository.updateAnimeWhereUnique({
       where: { id },
       data: convertData,
     });
-    return update.id;
+
+    return updatedAnime.id;
   }
 
   public async deleteAnimeById(id: number) {
@@ -102,14 +110,129 @@ export class AnimeService {
     return anime.id;
   }
 
+  public async createSeason(data: SeasonCreateDto, animeId: number) {
+    const newSeason = await this.seasonRepository.createSeason({
+      ...data,
+      animeId,
+    });
+
+    await this.updateAnimeTime(animeId);
+
+    return newSeason;
+  }
+
+  public async getAllSeasonByAnimeId(animeId: number) {
+    const seasons = await this.seasonRepository.getManySeasonWhere({ animeId });
+    return seasons;
+  }
+
+  public async updateSeasonById(data: SeasonUpdateDto, id: number) {
+    const updatedSeason = await this.seasonRepository.updateSeasonWhereUnique({
+      data,
+      where: { id },
+    });
+
+    await this.updateAnimeTime(updatedSeason.animeId);
+
+    return updatedSeason;
+  }
+
+  public async deleteSeasonById(id: number) {
+    const deletedSeason = await this.seasonRepository.deleteSeasonWhereUnique({
+      id,
+    });
+
+    await this.updateAnimeTime(deletedSeason.animeId);
+
+    return deletedSeason;
+  }
+
+  public async createWaifuOrThrow(data: WaifuCreateDto, animeId: number) {
+    if (await this.isWaifuExist(animeId))
+      throw new BadRequestException('This anime already has waifu');
+
+    const newWaifu = await this.waifuRepository.createWaifu({
+      ...data,
+      image: Buffer.from(data.image, 'base64'),
+      animeId,
+    });
+
+    await this.updateAnimeTime(animeId);
+
+    return newWaifu.id;
+  }
+
+  public async getWaifuWithoutImageByAnimeIdOrThrow(animeId: number) {
+    const waifu = await this.waifuRepository.getWaifuWithoutImageWhereUnique({
+      animeId,
+    });
+
+    if (!waifu)
+      throw new BadRequestException("Don't have waifu for this anime");
+
+    return waifu;
+  }
+
   public async getWaifuImageByAnimeIdOrThrow(animeId: number) {
     const waifuWithImage = await this.waifuRepository.getWaifuImageWhereUnique({
       animeId,
     });
+
     if (!waifuWithImage)
       throw new BadRequestException("Don't have waifu for this anime");
+
     return `data:image/png;base64,${Buffer.from(waifuWithImage.image).toString(
       'base64',
     )}`;
+  }
+
+  public async updateWaifuByAnimeIdOrThrow(
+    data: WaifuUpdateDto,
+    animeId: number,
+  ) {
+    if (!(await this.isWaifuExist(animeId)))
+      throw new BadRequestException("Don't have waifu for this anime");
+
+    const convertData = {
+      ...data,
+      image: data.image ? Buffer.from(data.image, 'base64') : undefined,
+    };
+
+    const updatedWaifu = await this.waifuRepository.updateWaifuWhereUnique({
+      data: convertData,
+      where: { animeId },
+    });
+
+    await this.updateAnimeTime(animeId);
+
+    return updatedWaifu.id;
+  }
+
+  public async deleteWaifuByAnimeIdOrThrow(animeId: number) {
+    if (!(await this.isWaifuExist(animeId)))
+      throw new BadRequestException("Don't have waifu for this anime");
+
+    const deletedWaifu = await this.waifuRepository.deleteWaifuWhereUnique({
+      animeId,
+    });
+
+    await this.updateAnimeTime(animeId);
+
+    return deletedWaifu.id;
+  }
+
+  private async updateAnimeTime(id: number): Promise<void> {
+    await this.animeRepository.updateAnimeWhereUnique({
+      data: { lastUpdate: new Date() },
+      where: { id },
+    });
+  }
+
+  private async isWaifuExist(animeId: number): Promise<boolean> {
+    const waifu = await this.waifuRepository.getWaifuWithoutImageWhereUnique({
+      animeId,
+    });
+
+    return !!waifu;
   }
 }

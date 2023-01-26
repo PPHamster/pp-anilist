@@ -14,8 +14,17 @@ export class SeasonRepository {
     return this.prismaService.season.createMany({ data });
   }
 
-  public getManySeasonWhere(where: Prisma.SeasonWhereInput): Promise<Season[]> {
-    return this.prismaService.season.findMany({ where });
+  public getManySeasonWhere(where: Prisma.SeasonWhereInput) {
+    return this.prismaService.season.findMany({
+      select: {
+        chapterCount: true,
+        id: true,
+        sequence: true,
+        title: true,
+      },
+      where,
+      orderBy: { sequence: 'asc' },
+    });
   }
 
   public getUserIdAndAnimeIdFromSeasonWhereUnique(
@@ -37,7 +46,7 @@ export class SeasonRepository {
     return this.prismaService.season.update(args);
   }
 
-  public async deleteSeasonWhereUnique(where: Prisma.SeasonWhereUniqueInput) {
-    await this.prismaService.season.delete({ where });
+  public deleteSeasonWhereUnique(where: Prisma.SeasonWhereUniqueInput) {
+    return this.prismaService.season.delete({ where });
   }
 }
